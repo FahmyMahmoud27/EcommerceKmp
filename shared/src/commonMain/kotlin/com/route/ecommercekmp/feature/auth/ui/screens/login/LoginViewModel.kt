@@ -32,7 +32,9 @@ class LoginViewModel(var loginUseCase: LoginUseCase) : ViewModel() {
     }
 
     private fun emailChanged(email: String) {
+        println("emailChanged: $email${state.value.email}")
         state.value = state.value.copy(email = email)//1:39
+        println("after change state ${state.value.email}")
     }
 
     private fun passwordChanged(password: String) {
@@ -40,17 +42,22 @@ class LoginViewModel(var loginUseCase: LoginUseCase) : ViewModel() {
     }
 
     private fun login() {
+        println("login function called")
         viewModelScope.launch {
-            state.value.loginStates = Resource.Loading
+            println("in scope")
+            state.value = state.value.copy(loginStates  = Resource.Loading)
             val result = loginUseCase.call(state.value.email, state.value.password)
             if (result.isSuccess) {
-                state.value.loginStates = Resource.Success()
+                state.value = state.value.copy(loginStates = Resource.Success())
             } else {
-                state.value.loginStates =
-                    Resource.Error(result.exceptionOrNull(), result.exceptionOrNull()?.message)
+                state.value = state.value.copy(
+                    loginStates = Resource.Error(
+                        result.exceptionOrNull(),
+                        result.exceptionOrNull()?.message
+                    )
+                )
             }
-
-        }//1.5
+        }
     }
 
 

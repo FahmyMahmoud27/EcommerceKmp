@@ -10,6 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.route.ecommercekmp.feature.auth.ui.screens.login.LoginView
+import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.MainBottomNavView
+import com.route.ecommercekmp.feature.commerce.ui.screen.splash.SplashView
 
 
 @Composable
@@ -26,10 +28,20 @@ fun App() {
 
     val navController = rememberNavController()
     MaterialTheme {
-        NavHost(navController = navController, startDestination = AppRoutes.LoginRoute) {
-            composable<AppRoutes.LoginRoute>() {
-                LoginView()
+        NavHost(navController = navController, startDestination = AppRoutes.SplashRoute) {
+
+            composable<AppRoutes.SplashRoute>() {
+                SplashView(navController)
             }
+
+            composable<AppRoutes.MainBottomNav>() {
+                MainBottomNavView(navController)
+            }
+
+            composable<AppRoutes.LoginRoute>() {
+                LoginView(navController)
+            }
+
         }
 
     }

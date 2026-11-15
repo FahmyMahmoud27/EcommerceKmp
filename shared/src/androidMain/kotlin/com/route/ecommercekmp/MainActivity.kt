@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.route.ecommercekmp.di.auth.authModule
+import com.route.ecommercekmp.feature.di.auth.authModule
+import com.route.ecommercekmp.feature.di.common.commonModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 
 class MainActivity : ComponentActivity() {
@@ -12,12 +15,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        startKoin {
-            modules(authModule)
+        if (GlobalContext.getOrNull() == null) {
+            startKoin {
+                androidContext(applicationContext)
+                modules(authModule,commonModule)
+            }
         }
         setContent {
             App()
         }
     }
 }
-
