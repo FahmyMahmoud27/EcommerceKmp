@@ -9,21 +9,25 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.isSuccess
 
-class AuthRemoteDataSourceImpl(httpclient: HttpClient) : AuthRemoteDataSource {
+class AuthRemoteDataSourceImpl(val httpClient: HttpClient) : AuthRemoteDataSource {
 
-
-    override suspend fun login(email: String, password: String): Result<AuthResponse> = try {
+    override suspend fun login(
+        email: String,
+        password: String
+    ): Result<AuthResponse> = try {
         val response = httpClient.post("v1/auth/signin") {
             setBody(LoginRequest(email, password))
         }
-        val authResponse = response.body<AuthResponse>()
         if (response.status.isSuccess()) {
+            val authResponse = response.body<AuthResponse>()
             Result.success(authResponse)
         } else {
-            Result.failure(Exception("${authResponse.message}"))
+            val errorMessage = response.body<AuthResponse>().message ?: ""
+            Result.failure(Exception(errorMessage))
         }
-    } catch (t: Throwable) {
-        Result.failure(exception = t)
-    }
 
+    } catch (t: Throwable) {
+        println("ahmed: t:$t")
+        Result.failure(t)
+    }
 }

@@ -15,10 +15,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,119 +34,152 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.route.ecommercekmp.AppRoutes
 import com.route.ecommercekmp.feature.auth.ui.components.CustomButton
 import com.route.ecommercekmp.feature.auth.ui.components.CustomTextField
 import ecommercekmp.shared.generated.resources.Res
 import ecommercekmp.shared.generated.resources.logo_route
+import com.route.ecommercekmp.feature.auth.ui.utils.Resource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun LoginView() {
+fun LoginView(navController: NavController) {
     val viewModel = koinViewModel<LoginViewModel>()
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF004182))
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(80.dp))
-
-        Image(
-            painter = painterResource(Res.drawable.logo_route),
-            contentDescription = "Route Logo",
-            modifier = Modifier.size(160.dp)
-        )
-
-        Spacer(modifier = Modifier.height(48.dp))
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "Welcome Back To Route",
-                color = Color.White,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Please sign in with your mail",
-                color = Color.White.copy(alpha = 0.8f),
-                fontSize = 16.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        CustomTextField(
-            value = state.email,
-            onValueChange = {
-                viewModel.doAction(LoginEvents.EmailChangedEvent(it))
-            },
-            label = "User Name",
-            placeholder = "enter your name"
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        CustomTextField(
-            value = state.password,
-            onValueChange = {
-                viewModel.doAction(LoginEvents.PasswordChangedEvent(it))
-            },
-            label = "Password",
-            placeholder = "enter your password",
-            visualTransformation = if (state.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            trailingIcon = {
-                Text(
-                    text = if (state.isPasswordVisible) "👁" else "🙈",
-                    modifier = Modifier.clickable {
-                        viewModel.doAction(LoginEvents.PasswordVisibilityEvent(!state.isPasswordVisible))
-                    }
+    LaunchedEffect(Unit) {
+        viewModel.state.collect {
+            if (it.loginStates is Resource.Error) {
+                snackbarHostState.showSnackbar(
+                    (it.loginStates as Resource.Error)
+                        .massage ?: "Something went wrong"
                 )
             }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Forgot password",
-            color = Color.White,
-            modifier = Modifier.align(Alignment.End).clickable { /* Handle forgot password */ }
-        )
-
-        Spacer(modifier = Modifier.height(56.dp))
-
-        CustomButton(
-            text = "Login",
-            onClick = {
-                viewModel.doAction(LoginEvents.LoginClickEvent)
+            if(it.loginStates is Resource.Success){
+                navController.navigate(AppRoutes.MainBottomNav)
             }
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Row(
-            modifier = Modifier.clickable {
-
-            },
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "Don't have an account? ",
-                color = Color.White
-            )
-            Text(
-                text = "Create Account",
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
         }
-
-        Spacer(modifier = Modifier.height(40.dp))
     }
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) {
+                Snackbar(
+                    snackbarData = it,
+                    containerColor = Color.Red,
+                    contentColor = Color.White,
+                )
+            }
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF004182))
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        )
+        {
+            Spacer(modifier = Modifier.height(80.dp))
+
+            Image(
+                painter = painterResource(Res.drawable.logo_route),
+                contentDescription = "Route Logo",
+                modifier = Modifier.size(160.dp)
+            )
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Welcome Back To Route",
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Please sign in with your mail",
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontSize = 16.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            CustomTextField(
+                value = state.email,
+                onValueChange = {
+                    viewModel.doAction(LoginEvents.EmailChangedEvent(it))
+                },
+                label = "User Name",
+                placeholder = "enter your name"
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            CustomTextField(
+                value = state.password,
+                onValueChange = {
+                    viewModel.doAction(LoginEvents.PasswordChangedEvent(it))
+                },
+                label = "Password",
+                placeholder = "enter your password",
+                visualTransformation = if (state.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
+                    Text(
+                        text = if (state.isPasswordVisible) "👁" else "🙈",
+                        modifier = Modifier.clickable {
+                            viewModel.doAction(LoginEvents.PasswordVisibilityEvent(!state.isPasswordVisible))
+                        }
+                    )
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Forgot password",
+                color = Color.White,
+                modifier = Modifier.align(Alignment.End).clickable { /* Handle forgot password */ }
+            )
+
+            Spacer(modifier = Modifier.height(56.dp))
+
+            CustomButton(
+                text = "Login",
+                onClick = {
+                    viewModel.doAction(LoginEvents.LoginClickEvent)
+                },
+                isLoading = state.loginStates is Resource.Loading
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                modifier = Modifier.clickable {
+
+                },
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Don't have an account? ",
+                    color = Color.White
+                )
+                Text(
+                    text = "Create Account",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+        }
+    }
+
 }

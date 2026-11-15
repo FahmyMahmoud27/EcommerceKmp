@@ -1,4 +1,4 @@
-package com.route.ecommercekmp.di.auth
+package com.route.ecommercekmp.feature.di.auth
 
 import com.route.ecommercekmp.feature.auth.data.repositories.auth_repository.AuthRepositoryImpl
 import com.route.ecommercekmp.feature.auth.data.repositories.auth_repository.data_source.auth_remote_data_source.AuthRemoteDataSource
@@ -19,7 +19,7 @@ val authModule = module {
         AuthRemoteDataSourceImpl(get())
     }
     single<AuthRepository> {
-        AuthRepositoryImpl(get())
+        AuthRepositoryImpl(get(),get())
     }
     single {
         LoginUseCase(get())

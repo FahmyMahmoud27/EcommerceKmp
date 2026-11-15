@@ -67,6 +67,11 @@ kotlin {
             //navigation
             implementation(libs.navigation.compose)
 
+            // DataStore library
+            implementation(libs.androidx.datastore.core)
+            // The Preferences DataStore library
+            implementation(libs.androidx.datastore.preferences.core)
+
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
