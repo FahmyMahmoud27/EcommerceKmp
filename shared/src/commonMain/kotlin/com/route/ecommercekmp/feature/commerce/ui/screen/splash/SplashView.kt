@@ -1,9 +1,11 @@
 package com.route.ecommercekmp.feature.commerce.ui.screen.splash
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.navigation.NavController
@@ -44,7 +46,7 @@ fun SplashView(navController: NavController) {
     }
 
 
-    Scaffold {
+    Scaffold(modifier = Modifier.fillMaxSize()) {
         Image(painter = painterResource(Res.drawable.splash_image), contentDescription = null)
 
     }
