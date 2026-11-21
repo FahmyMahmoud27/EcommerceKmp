@@ -38,7 +38,7 @@ fun SplashView(navController: NavController) {
         userTokenFlow.collectLatest {
             token = it ?: ""
             if (token.isNotEmpty()) {
-                navController.navigate(AppRoutes.MainBottomNav)
+                navController.navigate(AppRoutes.MainBottomNavRoute)
             } else {
                 navController.navigate(AppRoutes.LoginRoute)
             }
