@@ -2,15 +2,13 @@ package com.route.ecommercekmp
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.route.ecommercekmp.feature.auth.ui.screens.login.LoginView
 import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.MainBottomNavView
+import com.route.ecommercekmp.feature.commerce.ui.screen.products.ProductView
 import com.route.ecommercekmp.feature.commerce.ui.screen.splash.SplashView
 
 
@@ -34,10 +32,18 @@ fun App() {
                 SplashView(navController)
             }
 
-            composable<AppRoutes.MainBottomNav>() {
+            composable<AppRoutes.MainBottomNavRoute>() {
                 MainBottomNavView(navController)
             }
 
+            composable<AppRoutes.LoginRoute>() {
+                LoginView(navController)
+            }
+
+            composable<AppRoutes.ProductsRoute>() {backStackEntry ->
+                val route = backStackEntry.toRoute<AppRoutes.ProductsRoute>()
+                ProductView(navController, route.categoryId, route.subCategoryId)
+            }
             composable<AppRoutes.LoginRoute>() {
                 LoginView(navController)
             }
