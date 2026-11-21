@@ -8,9 +8,15 @@ sealed class AppRoutes{
 
 
     @Serializable
-    object MainBottomNav
+    object MainBottomNavRoute
 
     @Serializable
     object SplashRoute
+
+    @Serializable
+    data class ProductsRoute(val categoryId: String, val subCategoryId: String?)
+
+    @Serializable
+    data class ProductDetailsRoute(val productId: String)
 
 }

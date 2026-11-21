@@ -59,7 +59,7 @@ fun LoginView(navController: NavController) {
                 )
             }
             if(it.loginStates is Resource.Success){
-                navController.navigate(AppRoutes.MainBottomNav)
+                navController.navigate(AppRoutes.MainBottomNavRoute)
             }
         }
     }
