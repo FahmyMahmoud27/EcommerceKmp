@@ -1,5 +1,6 @@
 package com.route.ecommercekmp.feature.commerce.ui.screen.products
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.route.ecommercekmp.AppRoutes
 import com.route.ecommercekmp.feature.auth.ui.utils.Resource
 import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.home_tab.composables.ProductCard
 import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.home_tab.composables.SearchTextField
@@ -55,8 +57,10 @@ fun ProductView(navController: NavController, category: String, subCategory: Str
                 Spacer(modifier = Modifier.size(8.dp))
                 Icon(
                     painter = painterResource(Res.drawable.ic_cart),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    contentDescription = "Open cart",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { navController.navigate(AppRoutes.CartRoute) }
                 )
             }
             when (state.value.productsApiState) {
@@ -123,7 +127,14 @@ fun ProductView(navController: NavController, category: String, subCategory: Str
                             modifier = Modifier.fillMaxSize()
                         ) {
                             items(products) { product ->
-                                ProductCard(product)
+                                ProductCard(
+                                    product = product,
+                                    onProductClick = { clickedProduct ->
+                                        navController.navigate(
+                                            AppRoutes.ProductDetailsRoute(clickedProduct.id.orEmpty())
+                                        )
+                                    }
+                                )
                             }
                         }
                     } else {

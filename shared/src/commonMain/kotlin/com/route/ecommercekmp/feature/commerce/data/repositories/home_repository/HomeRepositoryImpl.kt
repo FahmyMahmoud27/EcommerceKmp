@@ -39,6 +39,15 @@ class HomeRepositoryImpl(private val homeRemoteDataSource: HomeRemoteDataSource)
         }
     }
 
+    override suspend fun getProductById(productId: String): Result<Product?> {
+        val result = homeRemoteDataSource.getProductById(productId)
+        return if (result.isSuccess && result.getOrNull() != null) {
+            Result.success(result.getOrNull()!!.product?.toProduct())
+        } else {
+            Result.failure(result.exceptionOrNull() ?: defaultException)
+        }
+    }
+
     override suspend fun getSubCategories(category: String): Result<List<Category>> {
         val result = homeRemoteDataSource.getSubCategories(category)
         return if (result.isSuccess && result.getOrNull() != null) {

@@ -87,8 +87,10 @@ fun CategoriesView(navController: NavController, selectedCategory: Category? = n
                 Spacer(modifier = Modifier.size(8.dp))
                 Icon(
                     painter = painterResource(Res.drawable.ic_cart),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    contentDescription = "Open cart",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { navController.navigate(AppRoutes.CartRoute) }
                 )
             }
 

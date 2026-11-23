@@ -3,6 +3,7 @@ package com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.t
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.route.ecommercekmp.AppRoutes
 import com.route.ecommercekmp.feature.commerce.domain.model.Category
 import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.home_tab.composables.AdsCarosuel
 import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.home_tab.composables.CategoriesGridView
@@ -70,8 +72,10 @@ fun HomeTabView(navController: NavController, onCategoryClick: (Category) -> Uni
                     Spacer(modifier = Modifier.size(8.dp))
                     Icon(
                         painter = painterResource(Res.drawable.ic_cart),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
+                        contentDescription = "Open cart",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { navController.navigate(AppRoutes.CartRoute) }
                     )
                 }
             }
@@ -88,7 +92,14 @@ fun HomeTabView(navController: NavController, onCategoryClick: (Category) -> Uni
             }
 
             item {
-                ProductsGridView(state.value.productApi)
+                ProductsGridView(
+                    state.value.productApi,
+                    onProductClick = { product ->
+                        navController.navigate(
+                            AppRoutes.ProductDetailsRoute(product.id.orEmpty())
+                        )
+                    }
+                )
             }
 
 

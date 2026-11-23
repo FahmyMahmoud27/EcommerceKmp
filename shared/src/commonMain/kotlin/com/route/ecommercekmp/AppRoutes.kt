@@ -19,4 +19,7 @@ sealed class AppRoutes{
     @Serializable
     data class ProductDetailsRoute(val productId: String)
 
+    @Serializable
+    object CartRoute
+
 }

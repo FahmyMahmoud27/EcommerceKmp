@@ -3,6 +3,7 @@ package com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.t
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,8 +15,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,14 +37,29 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.route.ecommercekmp.feature.Blue
 import com.route.ecommercekmp.feature.commerce.domain.model.Product
+import com.route.ecommercekmp.feature.commerce.ui.screen.cart.CartEvents
+import com.route.ecommercekmp.feature.commerce.ui.screen.cart.CartViewModel
 import ecommercekmp.shared.generated.resources.Res
 import ecommercekmp.shared.generated.resources.ic_plus
 import ecommercekmp.shared.generated.resources.ic_star
 import ecommercekmp.shared.generated.resources.ic_wishlist
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ProductCard(product: Product, modifier: Modifier = Modifier) {
+fun ProductCard(
+    product: Product,
+    modifier: Modifier = Modifier,
+    onProductClick: (Product) -> Unit = {}
+) {
+    val cartViewModel = koinViewModel<CartViewModel>()
+    val cartState = cartViewModel.state.collectAsState()
+
+    var cartProduct = cartState.value.latestCart?.products[product.id]
+    val isInCart = cartProduct != null
+    var isFavorite by remember { mutableStateOf(false) }
+
+
     Column(
         modifier = modifier
             .width(180.dp)
@@ -48,6 +70,7 @@ fun ProductCard(product: Product, modifier: Modifier = Modifier) {
             )
             .clip(RoundedCornerShape(16.dp))
             .background(Color.White)
+            .clickable { onProductClick(product) }
     ) {
         // Image Header
         Box(
@@ -68,14 +91,15 @@ fun ProductCard(product: Product, modifier: Modifier = Modifier) {
                     .size(32.dp)
                     .align(Alignment.TopEnd)
                     .clip(CircleShape)
-                    .background(Color.White),
+                    .background(if (isFavorite) Blue else Color.White)
+                    .clickable { isFavorite = !isFavorite },
                 contentAlignment = Alignment.Center
             ) {
 
-                Image(
+                Icon(
                     painter = painterResource(Res.drawable.ic_wishlist),
-                    contentDescription = "Favorite",
-//                    tint = Blue,
+                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                    tint = if (isFavorite) Color.White else Blue,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -147,7 +171,64 @@ fun ProductCard(product: Product, modifier: Modifier = Modifier) {
 //                    tint = Color(0xFFFFD700),
                     modifier = Modifier.size(16.dp),
                 )
+            }
+            if (isInCart) {
+                Row {
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(Blue),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Image(
+                            painter = painterResource(Res.drawable.ic_star),
+                            contentDescription = "Add to Cart",
+//                        tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                                .clickable {
+                                    if (cartProduct.cartQuantity == 1) {
+                                        cartViewModel.doAction(CartEvents.RemoveFromCart(product.id))
+                                    } else {
+                                        cartViewModel.doAction(
+                                            CartEvents.UpdateQuantity(
+                                                product.id,
+                                                cartProduct.cartQuantity - 1
 
+                                            )
+                                        )
+                                    }
+                                }
+                        )
+                    }
+
+                    Text(cartProduct.cartQuantity.toString())
+
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(Blue),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Image(
+                            painter = painterResource(Res.drawable.ic_plus),
+                            contentDescription = "Add to Cart",
+//                        tint = Color.White,
+                            modifier = Modifier.size(20.dp).clickable{
+                                cartViewModel.doAction(
+                                    CartEvents.UpdateQuantity(
+                                        product.id,
+                                        cartProduct.cartQuantity + 1
+
+                                    )
+                                )
+                            }
+                        )
+                    }
+                }
+
+            } else {
                 Spacer(modifier = Modifier.weight(1f))
 
                 // Add Button
@@ -155,8 +236,11 @@ fun ProductCard(product: Product, modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(Blue),
-                    contentAlignment = Alignment.Center
+                        .background(Blue)
+                        .clickable {
+                            cartViewModel.doAction(CartEvents.AddToCart(product.id))
+                        },
+                    contentAlignment = Alignment.Center,
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.ic_plus),
@@ -165,6 +249,8 @@ fun ProductCard(product: Product, modifier: Modifier = Modifier) {
                         modifier = Modifier.size(20.dp)
                     )
                 }
+
+
             }
         }
     }

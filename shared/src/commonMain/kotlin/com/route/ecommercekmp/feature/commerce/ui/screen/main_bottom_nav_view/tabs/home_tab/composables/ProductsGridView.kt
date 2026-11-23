@@ -25,7 +25,8 @@ import com.route.ecommercekmp.feature.common.composables.shimmerEffect
 
 @Composable
 fun ProductsGridView(
-    productsApiState: Resource<List<Product>>
+    productsApiState: Resource<List<Product>>,
+    onProductClick: (Product) -> Unit
 ) {
     when (productsApiState) {
         Resource.Loading -> {
@@ -82,7 +83,7 @@ fun ProductsGridView(
                 ) {
                     items(products.size) {
                         val product = products[it]
-                        ProductCard(product = product)
+                        ProductCard(product = product, onProductClick = onProductClick)
                     }
                 }
             }

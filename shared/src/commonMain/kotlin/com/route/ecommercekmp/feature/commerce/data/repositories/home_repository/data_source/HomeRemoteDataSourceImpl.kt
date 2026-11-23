@@ -1,6 +1,7 @@
 package com.route.ecommercekmp.feature.commerce.data.repositories.home_repository.data_source
 
 import com.route.ecommercekmp.feature.network.response.categories.CategoriesResponse
+import com.route.ecommercekmp.feature.network.response.prouducts.ProductResponse
 import com.route.ecommercekmp.feature.network.response.prouducts.ProductsResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -35,6 +36,16 @@ class HomeRemoteDataSourceImpl(private val httpClient: HttpClient) : HomeRemoteD
             val response = httpClient.get(url)
             val productsResponse = response.body<ProductsResponse>()
             return Result.success(productsResponse)
+        } catch (t: Throwable) {
+            return Result.failure(t)
+        }
+    }
+
+    override suspend fun getProductById(productId: String): Result<ProductResponse> {
+        try {
+            val response = httpClient.get("v1/products/$productId")
+            val productResponse = response.body<ProductResponse>()
+            return Result.success(productResponse)
         } catch (t: Throwable) {
             return Result.failure(t)
         }
