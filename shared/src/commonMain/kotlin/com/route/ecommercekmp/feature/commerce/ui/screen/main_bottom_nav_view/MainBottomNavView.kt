@@ -34,6 +34,8 @@ import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.ta
 import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.home_tab.HomeTabView
 import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.profile.ProfileTabView
 import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.wish_list.WishListTabView
+import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.wish_list.WishlistEvents
+import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.wish_list.WishlistViewModel
 import ecommercekmp.shared.generated.resources.Res
 import ecommercekmp.shared.generated.resources.ic_categories
 import ecommercekmp.shared.generated.resources.ic_home
@@ -49,9 +51,11 @@ data class NavItemData(val icon: DrawableResource, val index: Int)
 @Composable
 fun MainBottomNavView(navController: NavController) {
     val cartViewModel = koinInject<CartViewModel>()
+    val wishlistViewModel = koinInject<WishlistViewModel>()
 
     LaunchedEffect(Unit){
         cartViewModel.doAction(CartEvents.GetCart)
+        wishlistViewModel.doAction(WishlistEvents.GetWishlist)
     }
 
     var selectedIndex by remember { mutableIntStateOf(0) }

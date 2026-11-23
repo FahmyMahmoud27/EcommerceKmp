@@ -20,9 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,11 +36,15 @@ import com.route.ecommercekmp.feature.Blue
 import com.route.ecommercekmp.feature.commerce.domain.model.Product
 import com.route.ecommercekmp.feature.commerce.ui.screen.cart.CartEvents
 import com.route.ecommercekmp.feature.commerce.ui.screen.cart.CartViewModel
+import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.wish_list.WishlistEvents
+import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.wish_list.WishlistViewModel
+import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.wish_list.productIds
 import ecommercekmp.shared.generated.resources.Res
 import ecommercekmp.shared.generated.resources.ic_plus
 import ecommercekmp.shared.generated.resources.ic_star
 import ecommercekmp.shared.generated.resources.ic_wishlist
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -55,9 +56,12 @@ fun ProductCard(
     val cartViewModel = koinViewModel<CartViewModel>()
     val cartState = cartViewModel.state.collectAsState()
 
+    val wishlistViewModel = koinInject<WishlistViewModel>()
+    val wishlistState by wishlistViewModel.state.collectAsState()
+
     var cartProduct = cartState.value.latestCart?.products[product.id]
     val isInCart = cartProduct != null
-    var isFavorite by remember { mutableStateOf(false) }
+    val isFavorite = product.id?.let { wishlistState.productIds.contains(it) } == true
 
 
     Column(
@@ -92,7 +96,13 @@ fun ProductCard(
                     .align(Alignment.TopEnd)
                     .clip(CircleShape)
                     .background(if (isFavorite) Blue else Color.White)
-                    .clickable { isFavorite = !isFavorite },
+                    .clickable {
+                        if (isFavorite) {
+                            wishlistViewModel.doAction(WishlistEvents.RemoveFromWishlist(product.id))
+                        } else {
+                            wishlistViewModel.doAction(WishlistEvents.AddToWishlist(product.id))
+                        }
+                    },
                 contentAlignment = Alignment.Center
             ) {
 
