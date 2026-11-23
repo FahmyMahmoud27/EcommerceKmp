@@ -6,14 +6,14 @@ import com.route.ecommercekmp.feature.auth.data.repositories.auth_repository.dat
 import com.route.ecommercekmp.feature.auth.domain.repositories.AuthRepository
 import com.route.ecommercekmp.feature.auth.domain.usecase.LoginUseCase
 import com.route.ecommercekmp.feature.auth.ui.screens.login.LoginViewModel
-import com.route.ecommercekmp.feature.network.httpClient
+import com.route.ecommercekmp.feature.network.createHttpClient
 import io.ktor.client.HttpClient
 import org.koin.dsl.module
 
 
 val authModule = module {
     single<HttpClient> {
-        httpClient
+        createHttpClient(get())
     }
     single<AuthRemoteDataSource> {
         AuthRemoteDataSourceImpl(get())

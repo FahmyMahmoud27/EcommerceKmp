@@ -15,6 +15,7 @@ import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.route.ecommercekmp.feature.LightColorsScheme
 import com.route.ecommercekmp.feature.commerce.domain.model.Category
+import com.route.ecommercekmp.feature.commerce.ui.screen.cart.CartEvents
+import com.route.ecommercekmp.feature.commerce.ui.screen.cart.CartViewModel
 import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.categories_tab.CategoriesView
 import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.home_tab.HomeTabView
 import com.route.ecommercekmp.feature.commerce.ui.screen.main_bottom_nav_view.tabs.profile.ProfileTabView
@@ -38,12 +41,19 @@ import ecommercekmp.shared.generated.resources.ic_profile
 import ecommercekmp.shared.generated.resources.ic_wishlist
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
 
 
 data class NavItemData(val icon: DrawableResource, val index: Int)
 
 @Composable
 fun MainBottomNavView(navController: NavController) {
+    val cartViewModel = koinInject<CartViewModel>()
+
+    LaunchedEffect(Unit){
+        cartViewModel.doAction(CartEvents.GetCart)
+    }
+
     var selectedIndex by remember { mutableIntStateOf(0) }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     val navItems = listOf(

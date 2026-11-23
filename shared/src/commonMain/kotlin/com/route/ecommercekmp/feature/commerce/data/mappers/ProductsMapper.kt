@@ -14,7 +14,9 @@ fun RemoteProduct.toProduct(): Product = Product(
     ratingsAverage = ratingsAverage,
     price = price?.toDouble() ?: 0.0,
     id = id ?: "",
-    priceAfterDiscount = priceAfterDiscount?.toDouble()
+    priceAfterDiscount = priceAfterDiscount?.toDouble(),
+    brandName = brand?.name ?: "",
+    categoryName = category?.name ?: ""
 )
 
 
