@@ -16,6 +16,9 @@ data class Product(
     val price: Double? = 0.0,
     val id: String? = null,
     val priceAfterDiscount: Double? = null,
+    val brandName: String = "",
+    val categoryName: String = "",
+    var cartQuantity: Int = 0
 )
 
 
